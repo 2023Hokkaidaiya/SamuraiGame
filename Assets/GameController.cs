@@ -6,26 +6,26 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    public Text messageText; // TextMeshPro‚Å‚Í‚È‚­UI.Text
+    public Text messageText; // TextMeshProã§ã¯ãªãUI.Text
     public float minWaitTime = 1.5f;
     public float maxWaitTime = 4.0f;
     public KeyCode attackKey = KeyCode.Space;
 
-    //PlayerPrefab‚ğ“ü‚ê‚é
+    //PlayerPrefabã‚’å…¥ã‚Œã‚‹
     public GameObject Player1Prefab;
     public GameObject Enemy1Prefab;
 
     private GameObject Player;
     private GameObject Enemy;
 
-    //ˆê–‡ŠGPrefab‚ğ“ü‚ê‚é(Win or Lose)@‚»‚ê‚¼‚ê‚ÌPrefab‚ğì‚é•K—v‚ ‚è
+    //ä¸€æšçµµPrefabã‚’å…¥ã‚Œã‚‹(Win or Lose)ã€€ãã‚Œãã‚Œã®Prefabã‚’ä½œã‚‹å¿…è¦ã‚ã‚Š
     public GameObject Win1Prefab;
     private GameObject Win;
 
     public GameObject Lose1Prefab;
     private GameObject Lose;
 
-    //ƒJƒEƒ“ƒ^[ƒQ[ƒ€—p‚Ì’l
+    //ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ã‚²ãƒ¼ãƒ ç”¨ã®å€¤
     private float signalTime;
     private float enemyAttackTime;
     private GameState state = GameState.Waiting;
@@ -34,7 +34,7 @@ public class GameController : MonoBehaviour
     {
         StartCoroutine(StartDuel());
 
-        // ƒvƒŒƒCƒ„[‚Æ“G‚ğ¶¬
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨æ•µã‚’ç”Ÿæˆ
         Player = Instantiate(Player1Prefab, new Vector3(-7.5f, 0.1f, 0), Quaternion.identity);
         Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, 0.1f, 0), Quaternion.identity);
     }
@@ -42,11 +42,11 @@ public class GameController : MonoBehaviour
     IEnumerator StartDuel()
     {
         state = GameState.Waiting;
-        messageText.text = "W’†...";
+        messageText.text = "é›†ä¸­...";
         yield return new WaitForSeconds(Random.Range(minWaitTime, maxWaitTime));
 
-        // ‡}
-        messageText.text = "I";
+        // åˆå›³
+        messageText.text = "!";
         signalTime = Time.time;
         enemyAttackTime = signalTime + Random.Range(0.25f, 0.5f);
         state = GameState.Ready;
@@ -54,23 +54,17 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        //1‚ÅWin¨2–‡‚É–ß‚·
+        //1ã§ä¸€æšçµµWinã‹ã‚‰ã‚‚ã©ã™ï¼ˆãƒ‡ãƒãƒƒã‚°ç”¨ã§ã‚ã‚Šã®ã¡ã«æ›´æ–°ã™ã‚‹ã“ã¨ï¼‰
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             CheckoutWin();
         }
-        //1‚ÅLose¨2–‡‚É–ß‚·
+        //2ã§ä¸€æšçµµLoseã‹ã‚‰ã‚‚ã©ã™ï¼ˆãƒ‡ãƒãƒƒã‚°ç”¨ã§ã‚ã‚Šã®ã¡ã«æ›´æ–°ã™ã‚‹ã“ã¨ï¼‰
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             CheckoutLose();
         }
-        //0‚Åˆê–‡ŠG‚É•Ï‚¦‚éiƒfƒoƒbƒO—p‚Å‚ ‚è‚Ì‚¿‚ÉXV‚·‚é‚±‚Æj
-        /*
-        if (Input.GetKeyDown(KeyCode.Alpha0))
-        {
-            CheckinWin();
-        }
-        */
+
         if (state == GameState.Ended)
         {
             if (Input.GetKeyDown(KeyCode.R))
@@ -80,89 +74,83 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        // ‘Œ‚‚¿”»’è@i‚±‚ê‚ÍÅI“Id—l‚É–³‚¢‚Ì‚Åíœ—\’èj
+        // æ—©æ’ƒã¡åˆ¤å®šã€€ï¼ˆã“ã‚Œã¯æœ€çµ‚çš„ä»•æ§˜ã«ç„¡ã„ã®ã§å‰Šé™¤äºˆå®šï¼‰
         if (state == GameState.Waiting && Input.GetKeyDown(attackKey))
         {
-            messageText.text = "‘Œ‚‚¿I•‰‚¯...";
+            messageText.text = "è² ã‘";
             state = GameState.Ended;
         }
 
-        // ƒvƒŒƒCƒ„[UŒ‚i‰Ÿ‚µ‚ÄŠÔ‚É‡‚Á‚½ê‡‚ÆA‰Ÿ‚µ‚½‚¯‚ÇŠÔ‚É‡‚í‚È‚©‚Á‚½ê‡j
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ”»æ’ƒï¼ˆæŠ¼ã—ã¦é–“ã«åˆã£ãŸå ´åˆï¼‰
         if (state == GameState.Ready && Input.GetKeyDown(attackKey))
         {
             float playerTime = Time.time;
             if (playerTime < enemyAttackTime)
             {
-                messageText.text = "Ÿ‚¿I";
+                messageText.text = "å‹ã¡ï¼";
                 CheckinWin();
             }
-            /*else
-            {
-                messageText.text = "’x‚¢I•‰‚¯..."; //©‚¢‚ç‚È‚¢H
-               //‚±‚±‚ÉCheckinLose();                
-            }*/
             state = GameState.Ended;
         }
 
-        // “GUŒ‚i‰Ÿ‚³‚È‚©‚Á‚½ê‡j
+        // æ•µæ”»æ’ƒï¼ˆæŠ¼ã•ãªã‹ã£ãŸå ´åˆï¼‰
         if (state == GameState.Ready && Time.time >= enemyAttackTime)
         {
-            messageText.text = "a‚ç‚ê‚½I•‰‚¯...";
+            messageText.text = "è² ã‘ï¼";
             CheckinLose();
             state = GameState.Ended;
         }
     }
     public void CheckinWin()
-    {//“ü‚ê‘Ö‚¦’¼‘O‚Ìƒ|ƒWƒVƒ‡ƒ“‚ğæ“¾(L‚ÆR—¼•ûæ“¾)
+    {//å…¥ã‚Œæ›¿ãˆç›´å‰ã®ãƒã‚¸ã‚·ãƒ§ãƒ³ã‚’å–å¾—(Lã¨Rä¸¡æ–¹å–å¾—)
        Vector3 positionLeft = Player.transform.position;
        Vector3 positionRight = Enemy.transform.position;
        Vector3 positionMiddle = (positionLeft + positionRight) / 2f;
-     //ƒ|ƒWƒVƒ‡ƒ“‚ªæ“¾‚Å‚«‚½‚Ì”jŠü
+     //ãƒã‚¸ã‚·ãƒ§ãƒ³ãŒå–å¾—ã§ããŸã®ç ´æ£„
        Destroy(Player.gameObject, 0.0f);
         Destroy(Enemy.gameObject, 0.0f);
-    //ˆê–‡ŠGiWIN)‚ğ¶¬
+    //ä¸€æšçµµã‚’ç”Ÿæˆ
         Win = Instantiate(Win1Prefab, positionMiddle, Quaternion.identity);
      }
 
     public void CheckoutWin()
     {
-        //“ü‚ê‘Ö‚¦’¼‘O‚ÌWinƒ|ƒWƒVƒ‡ƒ“‚ğæ“¾
+        //å…¥ã‚Œæ›¿ãˆç›´å‰ã®ãƒã‚¸ã‚·ãƒ§ãƒ³ã‚’å–å¾—
         Vector3 positionMiddle = Win.transform.position;
-        //ƒ|ƒWƒVƒ‡ƒ“‚ªæ“¾‚Å‚«‚½‚Ì”jŠü
+        //ãƒã‚¸ã‚·ãƒ§ãƒ³ãŒå–å¾—ã§ããŸã®ç ´æ£„
         Destroy(Win.gameObject, 0.0f);
 
-        //Player1‚Æ2‚ğŠ’è‚ÌˆÊ’u‚É¶¬‚·‚é
+        //Player1ã¨2ã‚’æ‰€å®šã®ä½ç½®ã«ç”Ÿæˆã™ã‚‹
         Player = Instantiate(Player1Prefab);
         Enemy = Instantiate(Enemy1Prefab);
-
-        Player.transform.position = new Vector2(positionMiddle.x - 1.0f, -3.21048f);
-        Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, -3.21048f);
+        Player.transform.position = new Vector2(positionMiddle.x - 1.0f, positionMiddle.y);
+        Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, positionMiddle.y);
     }
 
     public void CheckinLose()
-    {//“ü‚ê‘Ö‚¦’¼‘O‚Ìƒ|ƒWƒVƒ‡ƒ“‚ğæ“¾(L‚ÆR—¼•ûæ“¾)
+    {
+        //å…¥ã‚Œæ›¿ãˆç›´å‰ã®ãƒã‚¸ã‚·ãƒ§ãƒ³ã‚’å–å¾—(Lã¨Rä¸¡æ–¹å–å¾—)
         Vector3 positionLeft = Player.transform.position;
         Vector3 positionRight = Enemy.transform.position;
         Vector3 positionMiddle = (positionLeft + positionRight) / 2f;
-        //ƒ|ƒWƒVƒ‡ƒ“‚ªæ“¾‚Å‚«‚½‚Ì”jŠü
+       //ãƒã‚¸ã‚·ãƒ§ãƒ³ãŒå–å¾—ã§ããŸã®ç ´æ£„
         Destroy(Player.gameObject, 0.0f);
         Destroy(Enemy.gameObject, 0.0f);
-        //ˆê–‡ŠGiLose)‚ğ¶¬
+        //ä¸€æšçµµã‚’ç”Ÿæˆ
         Lose = Instantiate(Lose1Prefab, positionMiddle, Quaternion.identity);
     }
     public void CheckoutLose()
     {
-        //“ü‚ê‘Ö‚¦’¼‘O‚ÌLoseƒ|ƒWƒVƒ‡ƒ“‚ğæ“¾
+        //å…¥ã‚Œæ›¿ãˆç›´å‰ã®ãƒã‚¸ã‚·ãƒ§ãƒ³ã‚’å–å¾—
         Vector3 positionMiddle = Lose.transform.position;
-        //ƒ|ƒWƒVƒ‡ƒ“‚ªæ“¾‚Å‚«‚½‚Ì”jŠü
+        //ãƒã‚¸ã‚·ãƒ§ãƒ³ãŒå–å¾—ã§ããŸã®ç ´æ£„
         Destroy(Lose.gameObject, 0.0f);
 
-        //Player1‚Æ2‚ğŠ’è‚ÌˆÊ’u‚É¶¬‚·‚é
+        //Player1ã¨2ã‚’æ‰€å®šã®ä½ç½®ã«ç”Ÿæˆã™ã‚‹
         Player = Instantiate(Player1Prefab);
         Enemy = Instantiate(Enemy1Prefab);
-
-        Player.transform.position = new Vector2(positionMiddle.x - 1.0f, -3.21048f);
-        Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, -3.21048f);
+        Player.transform.position = new Vector2(positionMiddle.x - 1.0f, positionMiddle.y);
+        Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, positionMiddle.y);
     }
 
 
