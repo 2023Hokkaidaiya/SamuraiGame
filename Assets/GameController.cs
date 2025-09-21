@@ -1,11 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic; //よく分かっていない
-using UnityEngine.UIElements;
-using static UnityEditor.Experimental.GraphView.GraphView;
-using System.Numerics;
-using Unity.Mathematics.Geometry;
+
 
 
 public class GameController : MonoBehaviour
@@ -37,6 +33,10 @@ public class GameController : MonoBehaviour
     void Start()
     {
         StartCoroutine(StartDuel());
+
+        // プレイヤーと敵を生成
+        Player = Instantiate(Player1Prefab, new Vector3(-7.5f, 0.1f, 0), Quaternion.identity);
+        Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, 0.1f, 0), Quaternion.identity);
     }
 
     IEnumerator StartDuel()
@@ -54,7 +54,16 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        
+        //1でWin→2枚に戻す
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            CheckoutWin();
+        }
+        //1でLose→2枚に戻す
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            CheckoutLose();
+        }
         //0で一枚絵に変える（デバッグ用でありのちに更新すること）
         /*
         if (Input.GetKeyDown(KeyCode.Alpha0))
@@ -83,11 +92,15 @@ public class GameController : MonoBehaviour
         {
             float playerTime = Time.time;
             if (playerTime < enemyAttackTime)
+            {
                 messageText.text = "勝ち！";
-            //ここにCheckinWin();
-            else
+                CheckinWin();
+            }
+            /*else
+            {
                 messageText.text = "遅い！負け..."; //←いらない？
-            //ここにCheckinLose();
+               //ここにCheckinLose();                
+            }*/
             state = GameState.Ended;
         }
 
@@ -95,25 +108,63 @@ public class GameController : MonoBehaviour
         if (state == GameState.Ready && Time.time >= enemyAttackTime)
         {
             messageText.text = "斬られた！負け...";
-            //ここにCheckinLose();
+            CheckinLose();
             state = GameState.Ended;
         }
     }
-    /*
-     * public void CheckinWin();
-    {
-     //入れ替え直前のポジションを取得(LとR両方取得)
+    public void CheckinWin()
+    {//入れ替え直前のポジションを取得(LとR両方取得)
        Vector3 positionLeft = Player.transform.position;
        Vector3 positionRight = Enemy.transform.position;
        Vector3 positionMiddle = (positionLeft + positionRight) / 2f;
-
      //ポジションが取得できたの破棄
-        Destroy(Player.gameObject, 0.0f);
+       Destroy(Player.gameObject, 0.0f);
         Destroy(Enemy.gameObject, 0.0f);
     //一枚絵（WIN)を生成
         Win = Instantiate(Win1Prefab, positionMiddle, Quaternion.identity);
      }
-    */
+
+    public void CheckoutWin()
+    {
+        //入れ替え直前のWinポジションを取得
+        Vector3 positionMiddle = Win.transform.position;
+        //ポジションが取得できたの破棄
+        Destroy(Win.gameObject, 0.0f);
+
+        //Player1と2を所定の位置に生成する
+        Player = Instantiate(Player1Prefab);
+        Enemy = Instantiate(Enemy1Prefab);
+
+        Player.transform.position = new Vector2(positionMiddle.x - 1.0f, -3.21048f);
+        Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, -3.21048f);
+    }
+
+    public void CheckinLose()
+    {//入れ替え直前のポジションを取得(LとR両方取得)
+        Vector3 positionLeft = Player.transform.position;
+        Vector3 positionRight = Enemy.transform.position;
+        Vector3 positionMiddle = (positionLeft + positionRight) / 2f;
+        //ポジションが取得できたの破棄
+        Destroy(Player.gameObject, 0.0f);
+        Destroy(Enemy.gameObject, 0.0f);
+        //一枚絵（Lose)を生成
+        Lose = Instantiate(Lose1Prefab, positionMiddle, Quaternion.identity);
+    }
+    public void CheckoutLose()
+    {
+        //入れ替え直前のLoseポジションを取得
+        Vector3 positionMiddle = Lose.transform.position;
+        //ポジションが取得できたの破棄
+        Destroy(Lose.gameObject, 0.0f);
+
+        //Player1と2を所定の位置に生成する
+        Player = Instantiate(Player1Prefab);
+        Enemy = Instantiate(Enemy1Prefab);
+
+        Player.transform.position = new Vector2(positionMiddle.x - 1.0f, -3.21048f);
+        Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, -3.21048f);
+    }
+
 
 }
 
