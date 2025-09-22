@@ -43,12 +43,12 @@ public class GameController : MonoBehaviour
     {
         state = GameState.Waiting;
         messageText.text = "集中...";
-        yield return new WaitForSeconds(Random.Range(minWaitTime, maxWaitTime));
+        yield return new WaitForSeconds(UnityEngine.Random.Range(minWaitTime, maxWaitTime));
 
         // 合図
         messageText.text = "!";
         signalTime = Time.time;
-        enemyAttackTime = signalTime + Random.Range(0.25f, 0.5f);
+        enemyAttackTime = signalTime + UnityEngine.Random.Range(0.25f, 0.5f);
         state = GameState.Ready;
     }
 
