@@ -35,8 +35,8 @@ public class GameController : MonoBehaviour
         StartCoroutine(StartDuel());
 
         // プレイヤーと敵を生成
-        Player = Instantiate(Player1Prefab, new Vector3(-7.5f, 0.1f, 0), Quaternion.identity);
-        Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, 0.1f, 0), Quaternion.identity);
+        Player = Instantiate(Player1Prefab, new Vector3(-7.5f, -3.8f, 0), Quaternion.identity);
+        Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, -3.8f, 0), Quaternion.identity);
     }
 
     IEnumerator StartDuel()
@@ -115,6 +115,13 @@ public class GameController : MonoBehaviour
 
     public void CheckoutWin()
     {
+        //ポジションが取得できたの破棄
+        Destroy(Win.gameObject, 0.0f);
+        //Player1と2を所定の位置に生成する        
+        Player = Instantiate(Player1Prefab, new Vector3(-7.5f, -3.8f, 0), Quaternion.identity);
+        Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, -3.8f, 0), Quaternion.identity);
+
+        /*
         //入れ替え直前のポジションを取得
         Vector3 positionMiddle = Win.transform.position;
         //ポジションが取得できたの破棄
@@ -125,6 +132,7 @@ public class GameController : MonoBehaviour
         Enemy = Instantiate(Enemy1Prefab);
         Player.transform.position = new Vector2(positionMiddle.x - 1.0f, positionMiddle.y);
         Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, positionMiddle.y);
+        */
     }
 
     public void CheckinLose()
@@ -141,16 +149,23 @@ public class GameController : MonoBehaviour
     }
     public void CheckoutLose()
     {
+        //ポジションが取得できたの破棄
+        Destroy(Lose.gameObject, 0.0f);
+        //Player1と2を所定の位置に生成する        
+        Player = Instantiate(Player1Prefab, new Vector3(-7.5f, -3.8f, 0), Quaternion.identity);
+        Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, -3.8f, 0), Quaternion.identity);
+        
+        /*
         //入れ替え直前のポジションを取得
         Vector3 positionMiddle = Lose.transform.position;
         //ポジションが取得できたの破棄
         Destroy(Lose.gameObject, 0.0f);
-
         //Player1と2を所定の位置に生成する
         Player = Instantiate(Player1Prefab);
         Enemy = Instantiate(Enemy1Prefab);
         Player.transform.position = new Vector2(positionMiddle.x - 1.0f, positionMiddle.y);
         Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, positionMiddle.y);
+        */
     }
 
 
