@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-public class WinController : MonoBehaviour
+public class LoseController : MonoBehaviour
 {
     [Header("Audio")]
     public AudioSource audioSource; // Inspectorでセットしてください
@@ -56,6 +56,8 @@ public class WinController : MonoBehaviour
 
     private void Play(AudioClip clip, float volume)
     {
+        audioSource.PlayOneShot(clip, volume);
+        /*
         if (useOneShot) audioSource.PlayOneShot(clip, volume);
         else
         {
@@ -63,5 +65,6 @@ public class WinController : MonoBehaviour
             audioSource.volume = volume;
             audioSource.Play();
         }
+        */
     }
 }
