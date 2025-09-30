@@ -108,6 +108,8 @@ MonoBehaviour:
   SE3Footsteps: {fileID: 0}
   defaultVolume: 1
   useOneShot: 1
+  damage: 1000
+  target: 0
 --- !u!82 &1314766515850234283
 AudioSource:
   m_ObjectHideFlags: 0

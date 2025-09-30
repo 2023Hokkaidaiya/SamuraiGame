@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum TargetSide { Left, Right }
+
 
 public class WinController : MonoBehaviour
 {
@@ -92,7 +92,7 @@ public class WinController : MonoBehaviour
     {
         if (hp == null)
         {
-            hp = Object.FindFirstObjectByType<HPController>();
+            hp = UnityEngine.Object.FindFirstObjectByType<HPController>();
             if (hp == null) return;
         }
 
@@ -105,7 +105,7 @@ public class WinController : MonoBehaviour
     // 多段ヒット用（イベントごとに呼ばれる）
     public void AnimationDamageMulti()
     {
-        if (hp == null) hp = Object.FindFirstObjectByType<HPController>();
+        if (hp == null) hp = UnityEngine.Object.FindFirstObjectByType<HPController>();
         if (hp == null) return;
         
         ApplyDamage();

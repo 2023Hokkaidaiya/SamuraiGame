@@ -92,7 +92,7 @@ public class LoseController : MonoBehaviour
     {
         if (hp == null)
         {
-            hp = Object.FindFirstObjectByType<HPController>();
+            hp = UnityEngine.Object.FindFirstObjectByType<HPController>();
             if (hp == null) return;
         }
 
@@ -105,7 +105,7 @@ public class LoseController : MonoBehaviour
     // 多段ヒット用（イベントごとに呼ばれる）
     public void AnimationDamageMulti()
     {
-        if (hp == null) hp = Object.FindFirstObjectByType<HPController>();
+        if (hp == null) hp = UnityEngine.Object.FindFirstObjectByType<HPController>();
         if (hp == null) return;
         
         ApplyDamage();
