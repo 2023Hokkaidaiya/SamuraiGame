@@ -2,87 +2,78 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-
 public class GameController : MonoBehaviour
 {
-    public Text messageText; // TextMeshProではなくUI.Text
+    public Text messageText;
     public float minWaitTime = 1.5f;
     public float maxWaitTime = 4.0f;
     public KeyCode attackKey = KeyCode.Space;
 
-    //PlayerPrefabを入れる
     public GameObject Player1Prefab;
     public GameObject Enemy1Prefab;
 
     private GameObject Player;
     private GameObject Enemy;
 
-    //一枚絵Prefabを入れる(Win or Lose)　それぞれのPrefabを作る必要あり
     public GameObject Win1Prefab;
     private GameObject Win;
 
     public GameObject Lose1Prefab;
     private GameObject Lose;
 
-    //カウンターゲーム用の値
     private float signalTime;
     private float enemyAttackTime;
-    private GameState state = GameState.Waiting;
+
+    // state を string に変更
+    [SerializeField] private string state = GameStates.Waiting;
+
+    private Coroutine duelCoroutine;
 
     void Start()
     {
-        StartCoroutine(StartDuel());
-
-        // プレイヤーと敵を生成
-        Player = Instantiate(Player1Prefab, new Vector3(-7.5f, -3.8f, 0), Quaternion.identity);
-        Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, -3.8f, 0), Quaternion.identity);
+        SpawnPlayersAtDefault();
+        duelCoroutine = StartCoroutine(StartDuel());
     }
 
     IEnumerator StartDuel()
     {
-        state = GameState.Waiting;
+        SetState(GameStates.Waiting);
         messageText.text = "集中...";
         yield return new WaitForSeconds(UnityEngine.Random.Range(minWaitTime, maxWaitTime));
 
-        // 合図
         messageText.text = "!";
         signalTime = Time.time;
         enemyAttackTime = signalTime + UnityEngine.Random.Range(0.25f, 0.5f);
-        state = GameState.Ready;
+        SetState(GameStates.Ready);
     }
 
     void Update()
     {
-        //1で一枚絵Winからもどす（デバッグ用でありのちに更新すること）
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            CheckoutWin();
-        }
-        //2で一枚絵Loseからもどす（デバッグ用でありのちに更新すること）
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            CheckoutLose();
-        }
+        // デバッグ用: 1 / 2 はそのまま
+        if (Input.GetKeyDown(KeyCode.Alpha1)) CheckoutWin();
+        if (Input.GetKeyDown(KeyCode.Alpha2)) CheckoutLose();
 
-        if (state == GameState.Ended)
+        if (GetState() == GameStates.Ended)
         {
             if (Input.GetKeyDown(KeyCode.R))
             {
-                StartCoroutine(StartDuel());
+                RestartFull();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                RestartRound();
             }
             return;
         }
 
-        // 早撃ち判定　（これは最終的仕様に無いので削除予定）
-        if (state == GameState.Waiting && Input.GetKeyDown(attackKey))
+        if (GetState() == GameStates.Waiting && Input.GetKeyDown(attackKey))
         {
             messageText.text = "負け";
-            state = GameState.Ended;
+            SetState(GameStates.Ended);
         }
 
-        // プレイヤー攻撃（押して間に合った場合）
-        if (state == GameState.Ready && Input.GetKeyDown(attackKey))
+        if (GetState() == GameStates.Ready && Input.GetKeyDown(attackKey))
         {
             float playerTime = Time.time;
             if (playerTime < enemyAttackTime)
@@ -90,94 +81,108 @@ public class GameController : MonoBehaviour
                 messageText.text = "勝ち！";
                 CheckinWin();
             }
-            state = GameState.Ended;
+            SetState(GameStates.Ended);
         }
 
-        // 敵攻撃（押さなかった場合）
-        if (state == GameState.Ready && Time.time >= enemyAttackTime)
+        if (GetState() == GameStates.Ready && Time.time >= enemyAttackTime)
         {
             messageText.text = "負け！";
             CheckinLose();
-            state = GameState.Ended;
+            SetState(GameStates.Ended);
         }
     }
+
     public void CheckinWin()
-    {//入れ替え直前のポジションを取得(LとR両方取得)
-       Vector3 positionLeft = Player.transform.position;
-       Vector3 positionRight = Enemy.transform.position;
-       Vector3 positionMiddle = (positionLeft + positionRight) / 2f;
-     //ポジションが取得できたの破棄
-       Destroy(Player.gameObject, 0.0f);
-        Destroy(Enemy.gameObject, 0.0f);
-    //一枚絵を生成
+    {
+        Vector3 positionLeft = Player.transform.position;
+        Vector3 positionRight = Enemy.transform.position;
+        Vector3 positionMiddle = (positionLeft + positionRight) / 2f;
+
+        Destroy(Player.gameObject);
+        Destroy(Enemy.gameObject);
+
         Win = Instantiate(Win1Prefab, positionMiddle, Quaternion.identity);
-     }
+    }
 
     public void CheckoutWin()
     {
-        //ポジションが取得できたの破棄
-        Destroy(Win.gameObject, 0.0f);
-        //Player1と2を所定の位置に生成する        
-        Player = Instantiate(Player1Prefab, new Vector3(-7.5f, -3.8f, 0), Quaternion.identity);
-        Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, -3.8f, 0), Quaternion.identity);
-
-        /*
-        //入れ替え直前のポジションを取得
-        Vector3 positionMiddle = Win.transform.position;
-        //ポジションが取得できたの破棄
-        Destroy(Win.gameObject, 0.0f);
-
-        //Player1と2を所定の位置に生成する
-        Player = Instantiate(Player1Prefab);
-        Enemy = Instantiate(Enemy1Prefab);
-        Player.transform.position = new Vector2(positionMiddle.x - 1.0f, positionMiddle.y);
-        Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, positionMiddle.y);
-        */
+        if (Win != null) Destroy(Win.gameObject);
+        SpawnPlayersAtDefault();
     }
 
     public void CheckinLose()
     {
-        //入れ替え直前のポジションを取得(LとR両方取得)
         Vector3 positionLeft = Player.transform.position;
         Vector3 positionRight = Enemy.transform.position;
         Vector3 positionMiddle = (positionLeft + positionRight) / 2f;
-       //ポジションが取得できたの破棄
-        Destroy(Player.gameObject, 0.0f);
-        Destroy(Enemy.gameObject, 0.0f);
-        //一枚絵を生成
+
+        Destroy(Player.gameObject);
+        Destroy(Enemy.gameObject);
+
         Lose = Instantiate(Lose1Prefab, positionMiddle, Quaternion.identity);
     }
+
     public void CheckoutLose()
     {
-        //ポジションが取得できたの破棄
-        Destroy(Lose.gameObject, 0.0f);
-        //Player1と2を所定の位置に生成する        
-        Player = Instantiate(Player1Prefab, new Vector3(-7.5f, -3.8f, 0), Quaternion.identity);
-        Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, -3.8f, 0), Quaternion.identity);
-        
-        /*
-        //入れ替え直前のポジションを取得
-        Vector3 positionMiddle = Lose.transform.position;
-        //ポジションが取得できたの破棄
-        Destroy(Lose.gameObject, 0.0f);
-        //Player1と2を所定の位置に生成する
-        Player = Instantiate(Player1Prefab);
-        Enemy = Instantiate(Enemy1Prefab);
-        Player.transform.position = new Vector2(positionMiddle.x - 1.0f, positionMiddle.y);
-        Enemy.transform.position = new Vector2(positionMiddle.x + 1.0f, positionMiddle.y);
-        */
+        if (Lose != null) Destroy(Lose.gameObject);
+        SpawnPlayersAtDefault();
     }
 
+    private void SpawnPlayersAtDefault()
+    {
+        if (Player != null) Destroy(Player);
+        if (Enemy != null) Destroy(Enemy);
 
+        Player = Instantiate(Player1Prefab, new Vector3(-7.5f, -3.8f, 0), Quaternion.identity);
+        Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, -3.8f, 0), Quaternion.identity);
+    }
+
+    private void RestartRound()
+    {
+        if (Win != null)
+        {
+            Destroy(Win.gameObject);
+            Win = null;
+        }
+        if (Lose != null)
+        {
+            Destroy(Lose.gameObject);
+            Lose = null;
+        }
+
+        if (Player == null || Enemy == null)
+        {
+            SpawnPlayersAtDefault();
+        }
+        else
+        {
+            Player.transform.position = new Vector3(-7.5f, -3.8f, 0);
+            Enemy.transform.position = new Vector3(6.2f, -3.8f, 0);
+        }
+
+        if (duelCoroutine != null) StopCoroutine(duelCoroutine);
+        duelCoroutine = StartCoroutine(StartDuel());
+    }
+
+    private void RestartFull()
+    {
+        if (Win != null) { Destroy(Win.gameObject); Win = null; }
+        if (Lose != null) { Destroy(Lose.gameObject); Lose = null; }
+
+        SpawnPlayersAtDefault();
+
+        if (duelCoroutine != null) StopCoroutine(duelCoroutine);
+        duelCoroutine = StartCoroutine(StartDuel());
+    }
+
+    private void SetState(string newState) => state = newState;
+    private string GetState() => state;
 }
 
-
-
-
-
-public enum GameState
+// 状態文字列を一箇所で管理
+public static class GameStates
 {
-    Waiting,
-    Ready,
-    Ended
+    public const string Waiting = "Waiting";
+    public const string Ready   = "Ready";
+    public const string Ended   = "Ended";
 }
