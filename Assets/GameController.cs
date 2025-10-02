@@ -5,8 +5,8 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     public Text messageText;
-    public float minWaitTime = 1.5f;
-    public float maxWaitTime = 4.0f;
+    //public float minWaitTime = 1.5f;objectから持ってきてるので不要
+    //public float maxWaitTime = 4.0f;objectのインスペクターから調整すること
     public KeyCode attackKey = KeyCode.Space;
 
     public GameObject Player1Prefab;
@@ -23,6 +23,10 @@ public class GameController : MonoBehaviour
 
     private float signalTime;
     private float enemyAttackTime;
+    private EnemyController enemyController;
+    public Text counterOfAttackedText; // Canvasに作ったCounterOfAttackedをアタッチ
+    private float remainingTime;       // 攻撃までの残り時間(float)
+
 
     // state を string に変更
     [SerializeField] private string state = GameStates.Waiting;
@@ -39,7 +43,9 @@ public class GameController : MonoBehaviour
     {
         SetState(GameStates.Waiting);
         messageText.text = "集中...";
-        yield return new WaitForSeconds(UnityEngine.Random.Range(minWaitTime, maxWaitTime));
+        // EnemyControllerから値を取る
+        float wait = UnityEngine.Random.Range(enemyController.minWaitTime, enemyController.maxWaitTime);
+        yield return new WaitForSeconds(wait);
 
         messageText.text = "!";
         signalTime = Time.time;
@@ -90,6 +96,26 @@ public class GameController : MonoBehaviour
             CheckinLose();
             SetState(GameStates.Ended);
         }
+
+        if (GetState() == GameStates.Ready)
+        {
+            remainingTime = enemyAttackTime - Time.time;
+            if (remainingTime > 0f)
+            {
+                // float 値をそのまま保持しつつ、UIには小数1桁で表示
+                counterOfAttackedText.text = $"攻撃まで: {remainingTime:F1}";
+            }
+            else
+            {
+                remainingTime = 0f; // マイナスにならないようにクリップ
+                counterOfAttackedText.text = "攻撃！";
+            }
+        }
+        else
+        {
+            remainingTime = 0f;
+            counterOfAttackedText.text = "攻撃まで: -";
+        }
     }
 
     public void CheckinWin()
@@ -135,6 +161,9 @@ public class GameController : MonoBehaviour
 
         Player = Instantiate(Player1Prefab, new Vector3(-7.5f, -3.8f, 0), Quaternion.identity);
         Enemy = Instantiate(Enemy1Prefab, new Vector3(6.2f, -3.8f, 0), Quaternion.identity);
+        // 生成したEnemyからEnemyControllerを取得
+        enemyController = Enemy.GetComponent<EnemyController>();
+
     }
 
     private void RestartRound()
