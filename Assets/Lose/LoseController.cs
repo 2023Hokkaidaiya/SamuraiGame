@@ -1,7 +1,5 @@
 using UnityEngine;
 
-public enum TargetSide { Left, Right }
-
 public class LoseController : MonoBehaviour
 {
     [Header("Audio")]
@@ -16,8 +14,12 @@ public class LoseController : MonoBehaviour
 
     [Header("Damage")]
     public int damage = 1000; // このPrefabで与えるダメージ（Inspectorで設定）
-    public TargetSide target = TargetSide.Right; // Winなら通常 Right（敵）
+    
+    [Tooltip("Left または Right と入力してください")]
+    public string target = "Left";
 
+
+    
     // アニメーションイベントから呼ぶ際に使うHPコントローラ参照（GameControllerから初期化する）
     private HPController hp;
     private bool appliedOnce;
@@ -117,9 +119,9 @@ public class LoseController : MonoBehaviour
         // 例: FindObjectOfType<GameController>()?.OnRoundAnimationFinished();
     }
 
-    private void ApplyDamage()
-    {
-        if (target == TargetSide.Left)
+   private void ApplyDamage()
+   {
+        if (target.Equals("Left", System.StringComparison.OrdinalIgnoreCase))
         {
             hp.ApplyDamageLeft(damage);
         }
@@ -128,6 +130,8 @@ public class LoseController : MonoBehaviour
             hp.ApplyDamageRight(damage);
         }
     }
+
+
 
     // リセットして再利用する場合に呼ぶ
     public void ResetAppliedFlag()

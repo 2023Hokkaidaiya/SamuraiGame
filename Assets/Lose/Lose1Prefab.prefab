@@ -109,7 +109,7 @@ MonoBehaviour:
   defaultVolume: 1
   useOneShot: 1
   damage: 1000
-  target: 0
+  target: Left
 --- !u!82 &1314766515850234283
 AudioSource:
   m_ObjectHideFlags: 0

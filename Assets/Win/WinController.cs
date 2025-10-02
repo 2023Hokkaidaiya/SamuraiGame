@@ -15,8 +15,10 @@ public class WinController : MonoBehaviour
     public bool useOneShot = true;
 
     [Header("Damage")]
-    public int damage = 1000; // このPrefabで与えるダメージ（Inspectorで設定）
-    public TargetSide target = TargetSide.Right; // Winなら通常 Right（敵）
+    public int damage = 2500; // このPrefabで与えるダメージ（Inspectorで設定）
+    [Tooltip("Left または Right と入力してください")]
+    public string target = "Right";
+
 
     // アニメーションイベントから呼ぶ際に使うHPコントローラ参照（GameControllerから初期化する）
     private HPController hp;
@@ -119,15 +121,17 @@ public class WinController : MonoBehaviour
 
     private void ApplyDamage()
     {
-        if (target == TargetSide.Left)
+        if (target.Equals("Left", System.StringComparison.OrdinalIgnoreCase))
         {
             hp.ApplyDamageLeft(damage);
         }
+   
         else
         {
             hp.ApplyDamageRight(damage);
         }
     }
+
 
     // リセットして再利用する場合に呼ぶ
     public void ResetAppliedFlag()
