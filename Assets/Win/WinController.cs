@@ -16,8 +16,7 @@ public class WinController : MonoBehaviour
 
     [Header("Damage")]
     public int damage = 2500; // このPrefabで与えるダメージ（Inspectorで設定）
-    [Tooltip("Left または Right と入力してください")]
-    public string target = "Right";
+    public TargetSide target = TargetSide.Right; //enum.csはTitleSceneにありますTargetがRight,Rightを減らす
 
 
     // アニメーションイベントから呼ぶ際に使うHPコントローラ参照（GameControllerから初期化する）
@@ -79,15 +78,16 @@ public class WinController : MonoBehaviour
         }
     }
 
-    // ----------------------------------------------------
-    // Animation-event 用メソッド（以下を Animation Window のイベントで指定）
-    // ----------------------------------------------------
+
 
     // GameController などから呼んで HPController を渡す
     public void Init(HPController hpController)
     {
         hp = hpController;
     }
+    // ----------------------------------------------------
+    // Animation-event 用メソッド（以下を Animation Window のイベントで指定）
+    // ----------------------------------------------------
 
     // 単発ヒット用（イベントにこの名前を指定）
     public void AnimationDamageOnce()
@@ -121,15 +121,14 @@ public class WinController : MonoBehaviour
 
     private void ApplyDamage()
     {
-        if (target.Equals("Left", System.StringComparison.OrdinalIgnoreCase))
+        if (target == TargetSide.Left)
         {
             hp.ApplyDamageLeft(damage);
         }
-   
-        else
+        else if (target == TargetSide.Right)
         {
             hp.ApplyDamageRight(damage);
-        }
+        }    
     }
 
 

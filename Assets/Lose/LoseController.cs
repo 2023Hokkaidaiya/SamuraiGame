@@ -14,9 +14,7 @@ public class LoseController : MonoBehaviour
 
     [Header("Damage")]
     public int damage = 1000; // このPrefabで与えるダメージ（Inspectorで設定）
-    
-    [Tooltip("Left または Right と入力してください")]
-    public string target = "Left";
+    public TargetSide target = TargetSide.Left; //enum.csはTitleSceneにありますTargetがleft,Leftを減らす
 
 
     
@@ -119,16 +117,16 @@ public class LoseController : MonoBehaviour
         // 例: FindObjectOfType<GameController>()?.OnRoundAnimationFinished();
     }
 
-   private void ApplyDamage()
-   {
-        if (target.Equals("Left", System.StringComparison.OrdinalIgnoreCase))
+    private void ApplyDamage()
+    {
+        if (target == TargetSide.Left)
         {
             hp.ApplyDamageLeft(damage);
         }
-        else
+        else if (target == TargetSide.Right)
         {
             hp.ApplyDamageRight(damage);
-        }
+        }    
     }
 
 
