@@ -15,24 +15,54 @@ public class HPController : MonoBehaviour
     public int initialHPLeft = 8000;
     public int initialHPRight = 8000;
 
+    public int HPLeft   => HPData.HPLeft;
+    public int HPRight  => HPData.HPRight;
+    public int EvP_Player => HPData.EvP_Player;
+    public int EvP_Enemy  => HPData.EvP_Enemy;
+    /*
     public int HPLeft { get; private set; }
     public int HPRight { get; private set; }
 
     // 累積ダメージ
     public int EvP_Player { get; private set; } // HPRight に与えた合計ダメージ
     public int EvP_Enemy  { get; private set; } // HPLeft に与えた合計ダメージ
-
+    */
     void Awake()
     {
+        // HPは保持、EvPはシーンごとにリセット
+        HPData.ResetEvP();
+
+        // 初期化は最初のシーンだけ
+        if (HPData.HPLeft == 0 && HPData.HPRight == 0 &&
+            HPData.EvP_Player == 0 && HPData.EvP_Enemy == 0)
+        {
+            HPData.HPLeft = Mathf.Max(0, initialHPLeft);
+            HPData.HPRight = Mathf.Max(0, initialHPRight);
+        }
+
+        UpdateUI();
+
+        /*
         HPLeft = Mathf.Max(0, initialHPLeft);
         HPRight = Mathf.Max(0, initialHPRight);
         EvP_Player = 0;
         EvP_Enemy = 0;
         UpdateUI();
+        */
     }
 
     public void ApplyDamageLeft(int damage)
     {
+        if (damage <= 0) return;
+        int before = HPData.HPLeft;
+        HPData.HPLeft = Mathf.Max(0, HPData.HPLeft - damage);
+
+        int actualDamage = before - HPData.HPLeft;
+        HPData.EvP_Enemy += actualDamage;
+
+        UpdateUI();
+
+        /*
         if (damage <= 0) return;
         int before = HPLeft;
         HPLeft = Mathf.Max(0, HPLeft - damage);
@@ -42,10 +72,21 @@ public class HPController : MonoBehaviour
         EvP_Enemy += actualDamage;
 
         UpdateUI();
+        */
     }
 
     public void ApplyDamageRight(int damage)
     {
+        if (damage <= 0) return;
+        int before = HPData.HPRight;
+        HPData.HPRight = Mathf.Max(0, HPData.HPRight - damage);
+
+        int actualDamage = before - HPData.HPRight;
+        HPData.EvP_Player += actualDamage;
+
+        UpdateUI();
+        
+        /*
         if (damage <= 0) return;
         int before = HPRight;
         HPRight = Mathf.Max(0, HPRight - damage);
@@ -55,15 +96,22 @@ public class HPController : MonoBehaviour
         EvP_Player += actualDamage;
 
         UpdateUI();
+        */
     }
 
     private void UpdateUI()
     {
-        if (hpLeftText)  hpLeftText.text  = $"HP:{HPLeft}";
+        if (hpLeftText)  hpLeftText.text  = $"HP:{HPData.HPLeft}";
+        if (hpRightText) hpRightText.text = $"HP:{HPData.HPRight}";
+        if (evpPlayerText) evpPlayerText.text = $"EvPP:{HPData.EvP_Player}";
+        if (evpEnemyText)  evpEnemyText.text  = $"EvPE:{HPData.EvP_Enemy}";
+        /*
+        if (hpLeftText) hpLeftText.text = $"HP:{HPLeft}";
         if (hpRightText) hpRightText.text = $"HP:{HPRight}";
 
         if (evpPlayerText) evpPlayerText.text = $"EvPP:{EvP_Player}";
         if (evpEnemyText)  evpEnemyText.text  = $"EvPE:{EvP_Enemy}";
+        */
     }
 }
 
