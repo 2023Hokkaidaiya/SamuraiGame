@@ -20,18 +20,22 @@ public class SceneChangeManager : MonoBehaviour
     {
         if (sceneChanged || hpController == null) return;
 
-        // プレイヤーが敵に与えた累積ダメージ
-        if (hpController.EvP_Player >= playerThreshold)
+        // Enterキーが押されたときのみ判定
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-            sceneChanged = true;
-            SceneManager.LoadScene(playerWinSceneName);
-        }
+            // プレイヤーが敵に与えた累積ダメージ
+            if (hpController.EvP_Player >= playerThreshold)
+            {
+                sceneChanged = true;
+                SceneManager.LoadScene(playerWinSceneName);
+            }
 
-        // 敵がプレイヤーに与えた累積ダメージ
-        if (hpController.EvP_Enemy >= enemyThreshold)
-        {
-            sceneChanged = true;
-            SceneManager.LoadScene(enemyWinSceneName);
+            // 敵がプレイヤーに与えた累積ダメージ
+            else if (hpController.EvP_Enemy >= enemyThreshold)
+            {
+                sceneChanged = true;
+                SceneManager.LoadScene(enemyWinSceneName);
+            }
         }
     }
 }
